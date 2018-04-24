@@ -1,0 +1,86 @@
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #container {
+    background-color: #EEEEEE; 
+    border: 1px solid gray;
+    height: 300px;
+    padding: 0;
+    overflow-x: scroll;
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .baseColorContainer {
+    width: 25%; 
+    height: 100%;
+    float: right;
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .complementaryColors {
+    width: 75%; 
+    height: 100%; 
+    float: left;
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .canvas_picker{
+    background-color: aquamarine;
+    display: none;
+    
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .colors {
+    display: flex;
+    justify-content: space-between;
+    height: 75%;
+    width: 100%;
+    
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .color {
+    height: 100%; 
+    width: 25%;
+    text-align: center;
+    display: inline-block;
+    float: right;
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .baseColor {
+    display: flex;
+    justify-content: space-between;
+    height: 75%;
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+    float: right;
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox1 {
+    height: 80%; 
+    width: 80%; 
+    margin: auto; 
+    background-color: #E03616; 
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox2 {
+    height: 80%; 
+    width: 80%; 
+    margin: auto;  
+    background-color: #FFF689; 
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox3 {
+    height: 80%; 
+    width: 80%; 
+    margin: auto; 
+    background-color: #CFFFB0; 
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox4 {
+    height: 80%; 
+    width: 80%; 
+    margin: auto; 
+    background-color: #5998C5; 
+}
+
+#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #baseColorBox {
+    height: 80%;
+    width: 80%;
+    margin: auto;
+    background-color: aqua;
+}
