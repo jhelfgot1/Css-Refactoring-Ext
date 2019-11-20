@@ -1,5 +1,6 @@
-define(function(require, exports, module) {
+define(["colorSelection", "require", "exports", "module"], function(cs, require, exports, module) {
    "use strict";
+    
     console.log("Loaded Css Color Refactoring Extension");
    
     
@@ -11,6 +12,7 @@ define(function(require, exports, module) {
     colorPalettePath = require.toUrl("colorpicker.jpg");
     
     
+
     const modulePath = ExtensionUtils.getModulePath(module);
     
     
@@ -19,21 +21,27 @@ define(function(require, exports, module) {
     var panel;
     
     function extInit() {
-        console.log("Displaying UI");
+        
     }
     
     function toggleColorPickerCanvasView() {
-        const canvasPickerElement = $(".canvas_picker");
-        console.log(canvasPickerElement.style);
-        console.log(window.getComputedStyle(canvasPickerElement).display);
+        const canvasPickerElement = document.getElementsByClassName("canvas_modal")[0];
+        
         if (window.getComputedStyle(canvasPickerElement).display === "none") {
-            console.log("Displaying canvas");
+            
             canvasPickerElement.style.display = "block";
+            const container = document.getElementById("CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT");
+            const canvasModal = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT .canvas_modal")[0];
+            const bottomOffset = window.getComputedStyle(container).height;
+            canvasModal.style.bottom = bottomOffset;
+            
+            
         }
         else {
-            console.log("hiding canvas");
+            
             canvasPickerElement.style.display = "none";
         }
+        
     }
     
     function handleMenuToggle() {
@@ -74,40 +82,109 @@ define(function(require, exports, module) {
         
         ExtensionUtils.loadFile(module, "index.html").then(function (fileContents) {
             
-            console.log(fileContents);
+            
             panel = WorkspaceManager.createBottomPanel(CSS_COlOR_REFACTORING_PANEL,$(fileContents),200);
             
             const success = function(v) {
                 
-                console.log("success");
+                
+                //Test hexToRgb()
+                
+                
+                
+                const container = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #container");
+                container.css("max-height", "400px");
+                
                 const colorSelectorDot = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #dot");
-                console.log(colorSelectorDot);
+                
                 
                 //Click handler for handling change of selected color.
                 
                 const baseColorBoxElement = document.getElementById("baseColorBox");
                 baseColorBoxElement.addEventListener("click", function(evt) {
-                    console.log(evt);
+                    
                     toggleColorPickerCanvasView();
                 });
                 
                 
                 const colorPaletteElement = $("<img id='colorPalette'>");
-                const canvasElement = document.getElementsByClassName("canvas_picker")[0].getContext("2d");
-                console.log(canvasElement);
+                const canvasElement = document.getElementsByClassName("canvas_picker")[0];
+                const ctx = canvasElement.getContext("2d");
+                
                 var colorPickerImage = new Image();
                 
                 colorPickerImage.src = colorPalettePath;
                 
                 $(colorPickerImage).load(function() {
-                    canvasElement.drawImage(colorPickerImage, 0, 0);
-                })
+                    ctx.drawImage(colorPickerImage, 0, 0, colorPickerImage.width, colorPickerImage.height,
+                                           0, 0, canvasElement.width, canvasElement.height);
+                });
                 
+                canvasElement.addEventListener("click", function(evt) {
+
+                    
+                    
+                    
+                    
+                    var x = evt.offsetX;
+                    var y = evt.offsetY;
+                    //ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                    var rgbVector = ctx.getImageData(x,y, 1, 1).data;
                 
-                //Sample jquery call.
-                const colorBox1 = $("#colorBox1");
-                colorBox1[0].style.backgroundColor = "blue";
-                //console.log(colorBox1.style("background-color"));
+                    var hexCode = cs.rgbToHex(rgbVector);
+                    console.log(rgbVector);
+                    
+                    let matchingPaletteObject = null;
+                    let acceptableRange = 5;
+                    
+                    do {
+                        matchingPaletteObject = cs.getMatchingPalette(rgbVector, acceptableRange);
+                        acceptableRange = acceptableRange + 10;
+                    } while (matchingPaletteObject === null);
+                    console.log(matchingPaletteObject.palette);
+                    
+                    const baseColorElement = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #baseColorBox");
+                    const colorBox1Element = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox1");
+                    const colorBox2Element = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox2");
+                    const colorBox3Element = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox3");
+                    const colorBox4Element = $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox4");
+                    
+                    
+                    const matchedPalette = matchingPaletteObject.palette;
+                    const selectedColor = "#" + matchedPalette[matchingPaletteObject.matchingIndex];
+                    
+                    $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #baseColorHexValue").val(selectedColor);
+                    baseColorElement.css("background-color", selectedColor);
+                    matchingPaletteObject.palette.splice(matchingPaletteObject.matchingIndex, 1);
+                    
+                    
+                    $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox1HexVal").val("#" + matchedPalette[0]);
+                    colorBox1Element.css("background-color", "#" + matchedPalette[0]);
+                    
+                    
+                    $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox2HexVal").val("#" + matchedPalette[2]);
+                    colorBox2Element.css("background-color", "#" + matchedPalette[2]);
+                    
+                    $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox3HexVal").val("#" + matchedPalette[4]);
+                    colorBox3Element.css("background-color", "#" + matchedPalette[4]);
+                    
+                    $("#CSS_COLOR_REFACTORING_EXTENSION_DOMCONTENT #colorBox4HexVal").val("#" + matchedPalette[6]);
+                    colorBox4Element.css("background-color", "#" + matchedPalette[6]);
+                    
+                    
+                    console.log(baseColorElement);
+    
+                    ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                    ctx.drawImage(colorPickerImage, 0, 0, colorPickerImage.width, colorPickerImage.height,
+                                           0, 0, canvasElement.width, canvasElement.height);
+                    ctx.beginPath()
+                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                    ctx.stroke();   
+                    
+                    
+                    
+                });
+                
                 
             }
     
